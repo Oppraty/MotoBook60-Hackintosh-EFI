@@ -25,6 +25,8 @@ Working OpenCore EFI and the path to get there for a Moto Book 60 laptop running
 7. **Optional full performance.** Only after a clean boot, read `full/README.md`. It contains the custom EPP/FanMode/RaplDiag/TccOffset/mic pieces, helpers, and AuxKC used for the best score. EFI alone does not reproduce that result.
 8. **Internal install.** Copy only a verified EFI to the internal ESP, preserving other boot entries. Keep the recovery USB.
 
+**No Windows?** Skip 1401. Build the USB manually: format it GPT/FAT32, extract `EFI-OC.zip` to get `EFI/OC/` + `EFI/BOOT/`, delete any `._*` files, generate your own serial/MLB/UUID/ROM, hash-verify the config, bless OpenCore to the USB ESP, boot once, and verify before copying to internal. See `GUIDE.md` §4.
+
 See `tools/README.md`, `tools/1401-baseline.md`, and `GUIDE.md` for details.
 
 ## Repository contents
