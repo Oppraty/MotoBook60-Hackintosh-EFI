@@ -1,4 +1,4 @@
-# Moto Book 60 macOS EFI toolkit
+# Moto Book 60 / 60 Pro macOS EFI toolkit
 
 Reference OpenCore EFI for a tested Moto Book 60 build, plus scripts to generate and patch an EFI for other variants. The machine below runs macOS 15.8.3 (24H241) with working display, input, Wi‑Fi, Bluetooth and speakers. Best recorded Geekbench 7 score: **1517 single / 8026 multi** with the optional full bundle.
 
