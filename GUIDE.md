@@ -78,7 +78,7 @@ Hyper‑Threading enabled in firmware. `IntelHybridCores` 0.2.0 (`ctrsmt=off hcp
 
 ## 4. Recreation — step by step
 
-1. **Back up everything.** Keep a timestamped copy of the current ESP and of any kext collection you modify. Never edit the internal ESP blind.
+1. **Back up everything.** Keep a timestamped copy of the current ESP and of any kext collection you modify. Never edit the internal ESP blind. If you prefer an assisted baseline, `tools/1401-baseline.md` explains how to use nullmoth/1401 to scan hardware and create a USB installer, then overlay this reference EFI with `tools/overlay-1401.sh`.
 2. **Format a spare USB stick** as GPT with a FAT32 EFI partition (≥200 MB).
 3. **Extract `EFI-OC.zip`** so the stick has `EFI/OC/` and `EFI/BOOT/` as in the archive. Check for and delete any AppleDouble `._*` files before booting (`dot_clean` or `find … -name '._*' -delete`).
 4. **Generate your own PlatformInfo.** In `EFI/OC/config.plist`, `PlatformInfo/Generic`: replace `SystemSerialNumber`, `MLB`, `SystemUUID`, and `ROM` with values generated for your machine (OpenCore Configurator / ProperTree or `macserial`). The published values are placeholders. Keep `SystemProductName = MacBookPro16,2` only if that SMBIOS suits your hardware.

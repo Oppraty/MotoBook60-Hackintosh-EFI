@@ -5,6 +5,7 @@ Working OpenCore EFI and the path to get there for a Moto Book 60 laptop running
 - **EFI:** `EFI-OC.zip` (OpenCore + 28 kexts + ACPI + drivers). Extract to the ESP as `EFI/OC/`.
 - **Full build:** `full/` — auxiliary KC, custom kexts, helpers and LaunchDaemons used for the best score. See `full/README.md`.
 - **Rebuild script:** `tools/rebuild.sh` verifies hashes and stages a reference-equivalent layout with your own PlatformInfo identity. See `tools/README.md`.
+- **1401 baseline:** `tools/1401-baseline.md` — optional Windows hardware scan/installer stick; overlay with this reference EFI via `tools/overlay-1401.sh`.
 - **Full guide:** `GUIDE.md` — hardware, boot args, what works, step-by-step recreation, verification, rollback, known limits.
 - **Platform info is sanitized.** Generate your own serial / MLB / UUID / ROM before daily use (see guide).
 
