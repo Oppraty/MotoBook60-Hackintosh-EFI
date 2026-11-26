@@ -1,21 +1,28 @@
-# Motorola Moto Book 60 (Core 7 240H) on macOS Sequoia 15.8.3
+# Moto Book 60 macOS EFI toolkit
 
-**Working OpenCore EFI for macOS 15.8.3 (24H241). The display, input, Wi‑Fi, Bluetooth and speakers work. The best recorded Geekbench 7 score is 1517 single / 8026 multi with the optional full bundle.**
+Reference OpenCore EFI for a tested Moto Book 60 build, plus scripts to generate and patch an EFI for other variants. The machine below runs macOS 15.8.3 (24H241) with working display, input, Wi‑Fi, Bluetooth and speakers. Best recorded Geekbench 7 score: **1517 single / 8026 multi** with the optional full bundle.
 
-> **SKU warning:** Moto Book 60 ships in several builds with different CPUs and panels. This EFI is only for the tested `83J7` with Core 7 240H, iGPU `8086:A7AB`, Samsung 2880×1800 OLED, Wi‑Fi `10EC:8922` and Bluetooth `0BDA:D922`. Other variants need their own custom EFI — do not overlay this one.
+## Reference machine
+
+| Component | Details |
+|---|---|
+| Laptop | Moto Book 60, machine type `83J7` |
+| CPU | Intel Core 7 240H, Raptor Lake, 6P+4E, 16 threads |
+| GPU | Intel `8086:A7AB`, Samsung OLED 2880×1800 at 120 Hz |
+| Wi‑Fi | Realtek RTL8922AE, PCI `10EC:8922` |
+| Bluetooth | Realtek RTL8922A, USB `0BDA:D922` |
+| SMBIOS | `MacPro7,1` in the published config |
 
 ## Other Moto Book 60 builds
 
-Moto Book 60 ships with different CPUs and displays. This repository is **only** for the tested Core 7 240H / `83J7` / Samsung 2880×1800 OLED configuration.
-
-For any other variant, generate a custom EFI:
+Moto Book 60 ships with different CPUs and displays. Use the reference `BOOT/` + `OC/` on the tested configuration above. For any other variant, generate a custom EFI:
 
 1. On Windows, run [nullmoth/1401](https://github.com/nullmoth/1401) as administrator.
 2. Click **Check this PC** so it scans your exact CPU, GPU, Wi‑Fi, Bluetooth, panel and USB layout.
 3. Click **Build the Mac setup**, read the BIOS steps, then **Create the macOS stick**.
 4. Boot the 1401 stick and verify macOS starts before adding any extra patches.
 
-Do not copy this Core 7 240H `BOOT/` + `OC/` onto another build. Use 1401's generated config as the base for that machine, then add only hardware-specific fixes you have verified.
+Use 1401's generated config as the base for that machine, then add only hardware-specific fixes you have verified.
 
 Automated 1401 path (Windows, administrator PowerShell):
 
@@ -27,7 +34,7 @@ powershell -ExecutionPolicy Bypass -File tools\generate-custom-efi.ps1 `
 
 It scans this PC, builds a custom EFI with 1401's rules, and validates it. It does not erase or write a disk.
 
-**Display caveat:** 1401's generated EFI will not contain this repository's custom WhateverXe build, panel timing patches, or 120 Hz raster work. It will not have this machine's Metal 2 / AUX brightness setup unless you add a compatible display kext yourself. The EFI in this repository includes those patches and is only for the tested Core 7 240H panel. For another build, verify display acceleration and brightness separately; do not assume the 1401 baseline provides them.
+**Display caveat:** 1401's generated EFI will not contain this repository's custom WhateverXe build, panel timing patches, or 120 Hz raster work. It will not have this machine's Metal 2 / AUX brightness setup unless you add a compatible display kext yourself. The reference EFI in this repository includes those patches for the tested panel. For another build, verify display acceleration and brightness separately; do not assume the 1401 baseline provides them.
 
 Scan the panel and generate timing values before building a WhateverXe for another display:
 

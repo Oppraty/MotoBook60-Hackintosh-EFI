@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Apply the tested WhateverXe display build to a generated OpenCore EFI.
 
-Only for the tested Core 7 240H / Samsung 2880x1800 OLED panel.
+The bundled WhateverXe build targets the tested Samsung 2880x1800 OLED panel. Use --kext for another panel.
 Run with Python 3 (the 1401 engine Python works on Windows).
 """
 import argparse
@@ -28,13 +28,13 @@ def main() -> int:
     ap.add_argument("--kext", type=Path, default=None,
                     help="WhateverXe.kext to install (default: this repo's OC/Kexts copy)")
     ap.add_argument("--confirm-matching-panel", action="store_true",
-                    help="confirm this is the tested Core 7 240H / Samsung 2880x1800 OLED panel")
+                    help="acknowledge the bundled kext targets the tested Samsung 2880x1800 OLED panel")
     ap.add_argument("--yes", action="store_true", help="confirm changes")
     args = ap.parse_args()
 
     if not args.confirm_matching_panel:
-        print("ERROR: requires --confirm-matching-panel. Only the tested Core 7 240H / Samsung 2880x1800 OLED panel is supported.", file=sys.stderr)
-        return 1
+        print("WARNING: the bundled WhateverXe build targets the tested Samsung 2880x1800 OLED panel.", file=sys.stderr)
+        print("For another panel, build a matching kext and pass --kext. Continuing.", file=sys.stderr)
     if not args.yes:
         print("ERROR: requires --yes. This edits config.plist and replaces WhateverXe.kext.", file=sys.stderr)
         return 1
