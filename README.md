@@ -29,6 +29,15 @@ It scans this PC, builds a custom EFI with 1401's rules, and validates it. It do
 
 **Display caveat:** 1401's generated EFI will not contain this repository's custom WhateverXe build, panel timing patches, or 120 Hz raster work. It will not have this machine's Metal 2 / AUX brightness setup unless you add a compatible display kext yourself. The EFI in this repository includes those patches and is only for the tested Core 7 240H panel. For another build, verify display acceleration and brightness separately; do not assume the 1401 baseline provides them.
 
+For a 1401-generated EFI on the tested Core 7 240H panel, apply the display build with:
+
+```bash
+python3 tools/apply-display-patch.py /path/to/1401/EFI \
+  --confirm-matching-panel --yes
+```
+
+It installs the bundled WhateverXe, removes WhateverGreen, and adds the display boot arguments. Validate with `ocvalidate` and verify 120 Hz, Metal 2 and brightness keys. For another panel, supply a matching kext with `--kext` instead.
+
 ![Working state](Images/working-state.png)
 
 ## Hardware
