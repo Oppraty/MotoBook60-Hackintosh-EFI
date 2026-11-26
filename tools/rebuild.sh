@@ -56,6 +56,7 @@ done
 
 mkdir -p "$OUT"
 rm -rf "$OUT/EFI" "$OUT/full-install"
+mkdir -p "$OUT/full-install"
 unzip -oq "$EFI_ZIP" -d "$OUT"
 [ "$(sha "$OUT/EFI/OC/config.plist")" = "$EXPECT_CONFIG" ] || die "published config hash mismatch"
 [ "$(sha "$OUT/EFI/OC/Kexts/WhateverXe.kext/Contents/MacOS/WhateverXe")" = "$EXPECT_WEX" ] || die "WhateverXe hash mismatch"
