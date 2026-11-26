@@ -5,9 +5,23 @@
 set -euo pipefail
 
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
-USB="${1:-}"
-IDENTITY="${2:-}"
-[ -n "$USB" ] || { echo "Usage: $0 /Volumes/USB-EFI [identity.json]" >&2; exit 1; }
+USB=""
+IDENTITY=""
+CONFIRM_HW=0
+while [ "$#" -gt 0 ]; do
+  case "$1" in
+    --confirm-matching-hardware) CONFIRM_HW=1; shift ;;
+    --identity) IDENTITY="$2"; shift 2 ;;
+    -h|--help) echo "Usage: $0 --confirm-matching-hardware /Volumes/USB-EFI [identity.json]"; exit 0 ;;
+    *) USB="$1"; shift ;;
+  esac
+done
+[ -n "$USB" ] || { echo "Usage: $0 --confirm-matching-hardware /Volumes/USB-EFI [identity.json]" >&2; exit 1; }
+if [ "$CONFIRM_HW" -ne 1 ]; then
+  echo "ERROR: confirm this machine matches the tested SKU with --confirm-matching-hardware" >&2
+  echo "Moto Book 60 has multiple CPU/panel variants. Only 83J7 / Core 7 240H / 8086:A7AB / Samsung 2880x1800 OLED / 10EC:8922 / 0BDA:D922 is supported." >&2
+  exit 1
+fi
 [ -d "$USB/EFI" ] || { echo "ERROR: $USB/EFI not found" >&2; exit 1; }
 
 sha() { shasum -a 256 "$1" | awk '{print $1}'; }

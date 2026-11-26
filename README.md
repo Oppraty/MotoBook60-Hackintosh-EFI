@@ -2,6 +2,8 @@
 
 **Working OpenCore EFI for macOS 15.8.3 (24H241). The display, input, Wi‑Fi, Bluetooth and speakers work. The best recorded Geekbench 7 score is 1517 single / 8026 multi with the optional full bundle.**
 
+> **SKU warning:** Moto Book 60 ships in several builds with different CPUs and panels. This EFI is only for the tested `83J7` with Core 7 240H, iGPU `8086:A7AB`, Samsung 2880×1800 OLED, Wi‑Fi `10EC:8922` and Bluetooth `0BDA:D922`. Other variants need their own custom EFI — do not overlay this one.
+
 ![Working state](Images/working-state.png)
 
 ## Hardware
