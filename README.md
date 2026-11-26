@@ -14,11 +14,11 @@ Working OpenCore EFI and the path to get there for a Moto Book 60 laptop running
 | Bluetooth | Realtek RTL8922A USB `0BDA:D922`, On, THIRD_PARTY_DONGLE |
 | Wi‑Fi | Realtek RTL8922AE PCI `10EC:8922` |
 | Ethernet | RTL8152 `0BDA:8152` on hub via built-in ECM |
-| CPU | 6P+4E, 16 threads (HT on), CPUFriend + CpuTopologyRebuild |
-| Config (published, sanitized) | SHA256 `06f3eb63a2fa13ecbfcc13a338cbc140d9cb40a14cf57a7f85f3d6e723412613` |
-| WhateverXe (published build) | SHA256 `78ed5bef2ed1041647148e6e05cfec0a8579e31adc56878d4785a5b87195403f` |
-| EFI zip | SHA256 `37238556e2808a69fb8ef9dd9f8ac9e5ee8969ee796e49c714cbf20e627c2455` |
+| CPU | 6P+4E, 16 threads (HT on), IntelHybridCores; CPUFriend/CTR disabled |
+| Config (published, sanitized) | SHA256 `343ee1c60ae170235a1e7085a144f4724219e7c6c3314396441f3a4361151199` |
+| WhateverXe (published build) | SHA256 `fb2f6bb995f951acb5df501892ae1281c54e5062dffcd0599ad4121496b07546` |
+| EFI zip | SHA256 `adb2ae75166fd1a2eea721a4518acd363f73b1833d137793f706eca1f1f4f1e2` |
 
-Not a universal EFI. It is tied to this machine's SSDT/USB map/kext set. Read the guide before using it.
+Published profile uses SMBIOS `MacPro7,1`; the internal mic does not publish on that profile. Use a laptop SMBIOS if the mic matters. Not a universal EFI. It is tied to this machine's SSDT/USB map/kext set. Read the guide before using it.
 
 Licenses: OpenCore (BSD‑3), kexts under their own licenses; WhateverXe is BSD‑3. No firmware blobs are redistributed here beyond what the kext vendors include.

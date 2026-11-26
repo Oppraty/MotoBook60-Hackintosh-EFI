@@ -19,20 +19,22 @@ OS: macOS 15.8.3, OpenCore external ESP, internal NVMe holds the known‑good sy
 
 `EFI-OC.zip` contains `EFI/OC/` with:
 
-- `config.plist` (published hash `06f3eb63…`, sanitized platform info)
+- `config.plist` (published hash `343ee1c6…`, sanitized platform info)
 - `OpenCore.efi`, `Drivers/` (HfsPlus, OpenCanopy, OpenLinuxBoot, OpenRuntime, ResetNvramEntry)
 - `ACPI/` — SSDT‑EC, SSDT‑MCHC, SSDT‑PLUG‑ALT, SSDT‑PNLF, SSDT‑RTCAWAC, SSDT‑USBX, SSDT‑XOSI, SSDT‑Disable_Network_RP05
-- `Kexts/` (27 kexts): Lilu, WhateverXe, CPUFriend, CPUFriendDataProvider, CpuTopologyRebuild, WhateverXe support (NootedGreen, AMFIPass), BTNameFix, BlueToolFixup, BrightnessKeys, AirPort_RTW89, IO80211FamilyLegacy, IOSkywalkFamily, RTL8922AFirmware, AppleALC, USBToolBox + UTBDefault, XHCI‑unsupported, VirtualSMC, SMCBatteryManager, ReYogaSMC, VoodooPS2Controller, VoodooI2C, VoodooI2CHID
+- `Kexts/` (28 kexts): Lilu, RestrictEvents 1.1.6, CpuTscSync 1.1.2, WhateverXe, BrightnessKeys, BlueToolFixup, BTNameFix, AirPort_RTW89, IO80211FamilyLegacy, IOSkywalkFamily, RTL8922AFirmware, AppleALC, USBToolBox + UTBDefault, XHCI-unsupported, VirtualSMC, SMCBatteryManager, ReYogaSMC, VoodooPS2Controller, VoodooI2C, VoodooI2CHID, AMFIPass. CPUFriend and CpuTopologyRebuild are present but disabled.
 - `Resources/`, `Tools/`
 
 Key binary hashes:
 
 ```
-78ed5bef2ed1041647148e6e05cfec0a8579e31adc56878d4785a5b87195403f  WhateverXe
+fb2f6bb995f951acb5df501892ae1281c54e5062dffcd0599ad4121496b07546  WhateverXe
 36c3897684642942bd0dc60f20ecdf002aa375ce1788fa0cefc5e7282418dd76  CPUFriend
 0e36496ff627db53002ad04bd8e1e910909e083e587609fb9b472d5f2d7bde07  CpuTopologyRebuild
 6d839f1b4de72f4c90f7d91ae79b7af1f57644e7ebbe55042bbb1cad1ebd34a9  BlueToolFixup
 ee6f75463b9e96f079e37a1194f35ae3f64642bc624f39eb6b4d4c012cee5c86  Lilu
+16979236f272c0500913882e5347e38d5bad1841ea619fe5a0311e9f768aea4e  RestrictEvents
+e8d189862cf81fb1e5986479046a80e9b04ecd98ac99b3d2e065bab75ccb3b9a  CpuTscSync
 8db5ce949e77e534acfbf737d596ecfbbd59cadb519a912894cc6cffe48ceafa  NootedGreen
 6193931468fb36abb874912def1e92a6797a31d6212e2c0e4396422b9f6a32c6  RTL8922AFirmware
 c5c8dc205a079ee3f90b7875fb5ff622e4f15d32f29cf519123dab2822c422b7  USBToolBox
@@ -42,7 +44,7 @@ Original (pre‑publication) config hash on the machine: `e1120bdf7782a597df5e7c
 
 **Boot args:**
 ```
-keepsyms=1 -allow3d -disablegfxfirmware -igfxdvmt -wex-tgl-edp-keep -wex-panel-gop -wex-edp-auxbl -btlfxboardid -btlfxallowanyaddr -btlfxrealtek
+keepsyms=1 -allow3d -disablegfxfirmware -igfxdvmt -wex-tgl-edp-keep -wex-panel-gop -wex-edp-auxbl -btlfxboardid -btlfxallowanyaddr -btlfxrealtek ctrsmt=off hcpower=4,2 -vi2c-force-polling hpmpl1=64 tccoffset=2 revpatch=memtab,pci
 ```
 `csr-active-config = 03 08 00 00`, `SecureBootModel = Disabled`.
 
@@ -69,7 +71,7 @@ The Realtek USB Bluetooth controller needed: `BlueToolFixup` with the Realtek pa
 Wi‑Fi works via `10EC:8922` with the legacy 80211 stack + RTW89 driver + Skywalk family. Ethernet on a USB hub (`0BDA:8152`) was made to bind the built-in `AppleUSBECMData` by adding a high-probe-score personality to the loaded `RTL8922AFirmware.kext` Info.plist. IPv4 obtained via DHCP; default route and internet verified.
 
 ### CPU
-Hyper‑Threading enabled in firmware. `CPUFriend` (with generated DataProvider) raises all-core load frequency; `CpuTopologyRebuild 2.0.2` makes macOS report 6 cores / 16 threads (P-cores as cores, E-cores + SMT as threads). PL1 power limit still caps sustained all-core frequency. EPP/perf-bias `00`, LFM `08`. No panics from this stack.
+Hyper‑Threading enabled in firmware. `IntelHybridCores` 0.2.0 (`ctrsmt=off hcpower=4,2`) and `HybridPM` (`hpmpl1=64`) are used; `CPUFriend` and `CpuTopologyRebuild` are disabled. Several custom drivers (IntelSpeedShiftEPP with EPP/HWP Desired 0, FanMode, RaplDiag, TccOffset) live in the auxiliary kernel collection rather than the EFI, so this zip alone does not reproduce the full performance build. Best recorded Geekbench 7 result was 1517/8026 with maximum fan cooling. The logged `ICCMAX/PL4/OTHER` limit reason remained active; do not raise VRM/current limits to chase a score.
 
 ### Input / power / sensors
 `VoodooPS2Controller`, `VoodooI2C` + `VoodooI2CHID` for keyboard/trackpad; `BrightnessKeys` for AUX brightness keys; `SMCBatteryManager` + `ReYogaSMC` for battery/sensors; `USBToolBox` + `UTBDefault` for the USB map.
