@@ -54,8 +54,6 @@ python3 tools/apply-display-patch.py /path/to/1401/EFI \
 
 It installs the bundled WhateverXe, removes WhateverGreen, and adds the display boot arguments. Validate with `ocvalidate` and verify 120 Hz, Metal 2 and brightness keys. For another panel, supply a matching kext with `--kext` instead.
 
-![Working state](Images/working-state.png)
-
 ## Hardware
 
 | Component | Details |
