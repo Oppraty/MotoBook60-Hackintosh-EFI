@@ -63,7 +63,7 @@ The custom EPP, FanMode, RaplDiag, TccOffset and mic kexts are in `full/` and ar
 2. Format a USB stick as GPT/FAT32 with an EFI partition.
 3. Prepare the USB with the included script:
    ```bash
-   ./tools/prepare-usb.sh /Volumes/USB-EFI
+   ./tools/prepare-usb.sh --confirm-matching-hardware /Volumes/USB-EFI
    ```
    It copies `BOOT/` and `OC/`, generates a fresh identity into `identity.generated.json`, applies it to `config.plist`, and runs `ocvalidate` if available.
 4. Boot from USB with the firmware picker. Verify display, brightness, keyboard/trackpad, Wi‑Fi, Bluetooth and audio.
