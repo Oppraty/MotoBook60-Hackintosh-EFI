@@ -4,6 +4,19 @@
 
 > **SKU warning:** Moto Book 60 ships in several builds with different CPUs and panels. This EFI is only for the tested `83J7` with Core 7 240H, iGPU `8086:A7AB`, Samsung 2880×1800 OLED, Wi‑Fi `10EC:8922` and Bluetooth `0BDA:D922`. Other variants need their own custom EFI — do not overlay this one.
 
+## Other Moto Book 60 builds
+
+Moto Book 60 ships with different CPUs and displays. This repository is **only** for the tested Core 7 240H / `83J7` / Samsung 2880×1800 OLED configuration.
+
+For any other variant, generate a custom EFI:
+
+1. On Windows, run [nullmoth/1401](https://github.com/nullmoth/1401) as administrator.
+2. Click **Check this PC** so it scans your exact CPU, GPU, Wi‑Fi, Bluetooth, panel and USB layout.
+3. Click **Build the Mac setup**, read the BIOS steps, then **Create the macOS stick**.
+4. Boot the 1401 stick and verify macOS starts before adding any extra patches.
+
+Do not copy this Core 7 240H `BOOT/` + `OC/` onto another build. Use 1401's generated config as the base for that machine, then add only hardware-specific fixes you have verified.
+
 ![Working state](Images/working-state.png)
 
 ## Hardware

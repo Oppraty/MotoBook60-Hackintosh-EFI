@@ -19,7 +19,8 @@ done
 [ -n "$USB" ] || { echo "Usage: $0 --confirm-matching-hardware /Volumes/USB-EFI [identity.json]" >&2; exit 1; }
 if [ "$CONFIRM_HW" -ne 1 ]; then
   echo "ERROR: confirm this machine matches the tested SKU with --confirm-matching-hardware" >&2
-  echo "Moto Book 60 has multiple CPU/panel variants. Only 83J7 / Core 7 240H / 8086:A7AB / Samsung 2880x1800 OLED / 10EC:8922 / 0BDA:D922 is supported." >&2
+  echo "Moto Book 60 has multiple CPU/panel variants. This EFI is only for 83J7 / Core 7 240H / 8086:A7AB / Samsung 2880x1800 OLED / 10EC:8922 / 0BDA:D922." >&2
+  echo "Other builds: generate a custom EFI with nullmoth/1401 (https://github.com/nullmoth/1401)." >&2
   exit 1
 fi
 [ -d "$USB/EFI" ] || { echo "ERROR: $USB/EFI not found" >&2; exit 1; }
