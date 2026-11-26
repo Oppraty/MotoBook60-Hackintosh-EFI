@@ -1,42 +1,23 @@
 # Moto Book 60 — macOS daily-driver EFI
 
-Working OpenCore EFI and the path to get there for a Moto Book 60 laptop running macOS 15.8.3 (24H241).
+Working OpenCore EFI for one Motorola Moto Book 60 (`83J7`, Core 7 240H) running macOS 15.8.3 (24H241). Read `GUIDE.md` before using it.
 
 ## New users start here
 
-1. **Check hardware.** This is tied to the `83J7` / Core 7 240H / `8086:A7AB` / RTL8922AE + RTL8922A configuration. Other models need their own kexts and patches.
-2. **Back up.** Make a disk + ESP backup and a separate bootable recovery USB. Do not modify the internal ESP first.
-3. **Create a baseline USB.** On Windows, run [nullmoth/1401](https://github.com/nullmoth/1401), click Check this PC, Build the Mac setup, read the BIOS steps, then Create the macOS stick. Without Windows, follow the manual path in `GUIDE.md`.
-4. **Build the reference staging tree on macOS:**
-   ```bash
-   git clone https://github.com/Oppraty/MotoBook60-Hackintosh-EFI.git
-   cd MotoBook60-Hackintosh-EFI
-   cp tools/identity.example.json my-identity.json
-   # edit my-identity.json with your own serial / MLB / UUID / ROM
-   ./tools/rebuild.sh --out ./mb60-rebuild \
-     --identity ./my-identity.json \
-     --ocvalidate /path/to/ocvalidate
-   ```
-5. **Overlay the 1401 USB:**
-   ```bash
-   ./tools/overlay-1401.sh --usb /Volumes/USB-EFI --staging ./mb60-rebuild --yes
-   ```
-6. **Test the USB.** Boot macOS, check display/120 Hz, brightness, keyboard/trackpad, Wi-Fi/Bluetooth, and speakers. Do not install to the internal disk yet.
-7. **Optional full performance.** Only after a clean boot, read `full/README.md`. It contains the custom EPP/FanMode/RaplDiag/TccOffset/mic pieces, helpers, and AuxKC used for the best score. EFI alone does not reproduce that result.
-8. **Internal install.** Copy only a verified EFI to the internal ESP, preserving other boot entries. Keep the recovery USB.
+1. **Check hardware.** This EFI is tied to `83J7`, Core 7 240H, iGPU `8086:A7AB`, Wi‑Fi `10EC:8922`, Bluetooth `0BDA:D922`, and the Samsung 2880×1800 OLED. Other hardware needs different kexts/patches.
+2. **Back up.** Make a disk + ESP backup and a separate bootable recovery USB. Do not touch the internal ESP first.
+3. **Build a USB stick manually.** Format a USB as GPT/FAT32 with an EFI partition, extract `EFI-OC.zip` to get `EFI/OC/` and `EFI/BOOT/`, delete any `._*` files, generate your own serial/MLB/UUID/ROM in `config.plist`, hash-verify, bless OpenCore to the USB ESP, then boot and verify display/brightness/input/Wi‑Fi/Bluetooth.
+4. **Optional full performance.** After a clean boot, read `full/README.md`. It contains custom kexts, helpers and AuxKC used for the best score. EFI alone does not reproduce that result.
+5. **Internal install.** Copy only a verified EFI to the internal ESP, preserving other boot entries. Keep the recovery USB.
 
-**No Windows?** Skip 1401. Build the USB manually: format it GPT/FAT32, extract `EFI-OC.zip` to get `EFI/OC/` + `EFI/BOOT/`, delete any `._*` files, generate your own serial/MLB/UUID/ROM, hash-verify the config, bless OpenCore to the USB ESP, boot once, and verify before copying to internal. See `GUIDE.md` §4.
-
-See `tools/README.md`, `tools/1401-baseline.md`, and `GUIDE.md` for details.
+Detailed steps: `GUIDE.md` §4.
 
 ## Repository contents
 
-- **EFI:** `EFI-OC.zip` (OpenCore + 28 kexts + ACPI + drivers). Extract to the ESP as `EFI/OC/`.
-- **Full build:** `full/` — auxiliary KC, custom kexts, helpers and LaunchDaemons used for the best score. See `full/README.md`.
-- **Rebuild script:** `tools/rebuild.sh` verifies hashes and stages a reference-equivalent layout with your own PlatformInfo identity. See `tools/README.md`.
-- **1401 baseline:** `tools/1401-baseline.md` — optional Windows hardware scan/installer stick; overlay with this reference EFI via `tools/overlay-1401.sh`.
-- **Full guide:** `GUIDE.md` — hardware, boot args, what works, step-by-step recreation, verification, rollback, known limits.
-- **Platform info is sanitized.** Generate your own serial / MLB / UUID / ROM before daily use (see guide).
+- `EFI-OC.zip` — OpenCore + 28 kexts + ACPI + drivers. Extract as `EFI/OC/`.
+- `full/` — auxiliary KC, custom kexts, helpers and LaunchDaemons for the performance profile. See `full/README.md`.
+- `screenshots/` — captured evidence. See `screenshots/README.md`.
+- `GUIDE.md` — hardware, boot args, build, verification, rollback, known limits.
 
 ## Quick facts
 
@@ -46,11 +27,13 @@ See `tools/README.md`, `tools/1401-baseline.md`, and `GUIDE.md` for details.
 | Bluetooth | Realtek RTL8922A USB `0BDA:D922`, On, THIRD_PARTY_DONGLE |
 | Wi‑Fi | Realtek RTL8922AE PCI `10EC:8922` |
 | Ethernet | RTL8152 `0BDA:8152` on hub via built-in ECM |
-| CPU | 6P+4E, 16 threads (HT on), IntelHybridCores; CPUFriend/CTR disabled |
+| CPU | 6P+4E, 16 threads, IntelHybridCores; CPUFriend/CTR disabled |
 | Config (published, sanitized) | SHA256 `343ee1c60ae170235a1e7085a144f4724219e7c6c3314396441f3a4361151199` |
 | WhateverXe (published build) | SHA256 `fb2f6bb995f951acb5df501892ae1281c54e5062dffcd0599ad4121496b07546` |
 | EFI zip | SHA256 `adb2ae75166fd1a2eea721a4518acd363f73b1833d137793f706eca1f1f4f1e2` |
 
-Published profile uses SMBIOS `MacPro7,1`; the internal mic does not publish on that profile. Use a laptop SMBIOS if the mic matters. The `full/` bundle is not required to boot and contains ad-hoc-signed kexts; read its README first. Not a universal EFI. It is tied to this machine's SSDT/USB map/kext set. Read the guide before using it.
+Published profile uses SMBIOS `MacPro7,1`; the internal mic does not publish on that profile. Use a laptop SMBIOS if the mic matters. `full/` contains ad-hoc-signed kexts and is not required to boot. Not a universal EFI.
 
-Licenses: OpenCore (BSD‑3), kexts under their own licenses; WhateverXe is BSD‑3. No firmware blobs are redistributed here beyond what the kext vendors include.
+Best recorded Geekbench 7 result: **1517 single / 8026 multi** with the full bundle and maximum fan cooling. AirDrop remains unverified (no Apple peer available). Sleep/wake is not reliable on this stack.
+
+Licenses: OpenCore BSD‑3, kexts under their own licenses, WhateverXe BSD‑3. No machine-specific identifiers are published.
