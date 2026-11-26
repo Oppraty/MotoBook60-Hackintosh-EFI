@@ -27,6 +27,8 @@ powershell -ExecutionPolicy Bypass -File tools\generate-custom-efi.ps1 `
 
 It scans this PC, builds a custom EFI with 1401's rules, and validates it. It does not erase or write a disk.
 
+**Display caveat:** 1401's generated EFI will not contain this repository's custom WhateverXe build, panel timing patches, or 120 Hz raster work. It will not have this machine's Metal 2 / AUX brightness setup unless you add a compatible display kext yourself. The EFI in this repository includes those patches and is only for the tested Core 7 240H panel. For another build, verify display acceleration and brightness separately; do not assume the 1401 baseline provides them.
+
 ![Working state](Images/working-state.png)
 
 ## Hardware
