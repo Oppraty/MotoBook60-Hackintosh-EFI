@@ -17,6 +17,16 @@ For any other variant, generate a custom EFI:
 
 Do not copy this Core 7 240H `BOOT/` + `OC/` onto another build. Use 1401's generated config as the base for that machine, then add only hardware-specific fixes you have verified.
 
+Automated 1401 path (Windows, administrator PowerShell):
+
+```powershell
+powershell -ExecutionPolicy Bypass -File tools\generate-custom-efi.ps1 `
+  -AppDir "C:\path\to\1401\engine\app" `
+  -WorkDir ".\mb60-custom"
+```
+
+It scans this PC, builds a custom EFI with 1401's rules, and validates it. It does not erase or write a disk.
+
 ![Working state](Images/working-state.png)
 
 ## Hardware

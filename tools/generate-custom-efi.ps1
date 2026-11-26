@@ -1,0 +1,64 @@
+<#
+Generate a custom OpenCore EFI for a different Moto Book 60 build using nullmoth/1401.
+Run in an administrator PowerShell on Windows.
+
+Usage:
+  powershell -ExecutionPolicy Bypass -File tools\generate-custom-efi.ps1 `
+    -AppDir "C:\path\to\1401\engine\app" -WorkDir ".\mb60-custom"
+
+The script scans this PC, builds an EFI with 1401's rules, and validates it.
+It does not erase or write any disk.
+#>
+param(
+  [Parameter(Mandatory = $true)][string]$AppDir,
+  [string]$PythonExe = "",
+  [string]$WorkDir = ".\mb60-custom",
+  [string]$MacOS = "",
+  [switch]$NewIdentity,
+  [switch]$ExperimentalDrivers,
+  [string]$UtbMap = ""
+)
+
+$ErrorActionPreference = "Stop"
+$admin = ([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole(
+  [Security.Principal.WindowsBuiltInRole]::Administrator)
+if (-not $admin) { throw "Run this script in an administrator PowerShell." }
+if (-not (Test-Path $AppDir)) { throw "AppDir not found: $AppDir" }
+
+if ([string]::IsNullOrWhiteSpace($PythonExe)) {
+  $PythonExe = Join-Path (Split-Path $AppDir -Parent) 'python\python.exe'
+}
+if (-not (Test-Path $PythonExe)) { throw "python.exe not found: $PythonExe" }
+
+$scanDir = Join-Path $WorkDir 'scan'
+$efiDir = Join-Path $WorkDir 'EFI'
+New-Item -ItemType Directory -Force -Path $WorkDir, $scanDir | Out-Null
+
+Push-Location $AppDir
+try {
+  Write-Host "== 1401: scan this PC =="
+  & $PythonExe -u -m p1401.scan $scanDir
+  if ($LASTEXITCODE -ne 0) { throw "1401 scan failed with code $LASTEXITCODE" }
+
+  $report = Join-Path $scanDir 'Report.json'
+  $acpi = Join-Path $scanDir 'ACPI'
+  if (-not (Test-Path $report)) { throw "missing $report" }
+  if (-not (Test-Path $acpi)) { throw "missing $acpi" }
+
+  Write-Host "== 1401: build custom EFI =="
+  $buildArgs = @('-u', '-m', 'p1401', 'build', $report, $acpi, $efiDir, '--echo')
+  if ($MacOS) { $buildArgs += @('--macos', $MacOS) }
+  if ($NewIdentity) { $buildArgs += '--new-identity' }
+  if ($ExperimentalDrivers) { $buildArgs += '--experimental-drivers' }
+  if ($UtbMap) { $buildArgs += @('--utbmap', $UtbMap) }
+  & $PythonExe @buildArgs
+  if ($LASTEXITCODE -ne 0) { throw "1401 build failed with code $LASTEXITCODE" }
+
+  Write-Host ""
+  Write-Host "Custom EFI generated at: $efiDir"
+  Write-Host "1401 validated it with ocvalidate. Apply the BIOS steps, then create the macOS stick."
+  Write-Host "To write a USB yourself with 1401 CLI:"
+  Write-Host "  python -m p1401.usbwriter write <disk-number> `"$efiDir`" <darwin-major>"
+  Write-Host "Darwin major: 24 for macOS 15, 25 for macOS 26."
+}
+finally { Pop-Location }
