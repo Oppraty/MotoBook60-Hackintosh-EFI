@@ -29,6 +29,15 @@ It scans this PC, builds a custom EFI with 1401's rules, and validates it. It do
 
 **Display caveat:** 1401's generated EFI will not contain this repository's custom WhateverXe build, panel timing patches, or 120 Hz raster work. It will not have this machine's Metal 2 / AUX brightness setup unless you add a compatible display kext yourself. The EFI in this repository includes those patches and is only for the tested Core 7 240H panel. For another build, verify display acceleration and brightness separately; do not assume the 1401 baseline provides them.
 
+Scan the panel and generate timing values before building a WhateverXe for another display:
+
+```bash
+python3 tools/make-display-profile.py --edid-decode edid.txt \
+  --out display-profile.json --patch-source /path/to/WhateverXe
+```
+
+It matches the built-in Samsung 2880x1800@120 profile when resolution/refresh agree, or emits a template with detected values. `--patch-source` edits the WhateverXe timing header; then build the kext with the project SDK.
+
 For a 1401-generated EFI on the tested Core 7 240H panel, apply the display build with:
 
 ```bash
