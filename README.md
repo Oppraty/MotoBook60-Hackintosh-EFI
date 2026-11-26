@@ -1,39 +1,102 @@
-# Moto Book 60 — macOS daily-driver EFI
+# Motorola Moto Book 60 (Core 7 240H) on macOS Sequoia 15.8.3
 
-Working OpenCore EFI for one Motorola Moto Book 60 (`83J7`, Core 7 240H) running macOS 15.8.3 (24H241). Read `GUIDE.md` before using it.
+**Working OpenCore EFI for macOS 15.8.3 (24H241). The display, input, Wi‑Fi, Bluetooth and speakers work. The best recorded Geekbench 7 score is 1517 single / 8026 multi with the optional full bundle.**
 
-## New users start here
+![Working state](Images/working-state.png)
 
-1. **Check hardware.** This EFI is tied to `83J7`, Core 7 240H, iGPU `8086:A7AB`, Wi‑Fi `10EC:8922`, Bluetooth `0BDA:D922`, and the Samsung 2880×1800 OLED. Other hardware needs different kexts/patches.
-2. **Back up.** Make a disk + ESP backup and a separate bootable recovery USB. Do not touch the internal ESP first.
-3. **Build a USB stick manually.** Format a USB as GPT/FAT32 with an EFI partition, extract `EFI-OC.zip` to get `EFI/OC/` and `EFI/BOOT/`, delete any `._*` files, generate your own serial/MLB/UUID/ROM in `config.plist`, hash-verify, bless OpenCore to the USB ESP, then boot and verify display/brightness/input/Wi‑Fi/Bluetooth.
-4. **Optional full performance.** After a clean boot, read `full/README.md`. It contains custom kexts, helpers and AuxKC used for the best score. EFI alone does not reproduce that result.
-5. **Internal install.** Copy only a verified EFI to the internal ESP, preserving other boot entries. Keep the recovery USB.
+## Hardware
 
-Detailed steps: `GUIDE.md` §4.
-
-## Repository contents
-
-- `EFI-OC.zip` — OpenCore + 28 kexts + ACPI + drivers. Extract as `EFI/OC/`.
-- `full/` — auxiliary KC, custom kexts, helpers and LaunchDaemons for the performance profile. See `full/README.md`.
-- `screenshots/` — captured evidence. See `screenshots/README.md`.
-- `GUIDE.md` — hardware, boot args, build, verification, rollback, known limits.
-
-## Quick facts
-
-| Item | Value |
+| Component | Details |
 |---|---|
-| Display | 2880×1800 @ 120 Hz, 60 Hz menu, AUX brightness (0 failures) |
-| Bluetooth | Realtek RTL8922A USB `0BDA:D922`, On, THIRD_PARTY_DONGLE |
-| Wi‑Fi | Realtek RTL8922AE PCI `10EC:8922` |
-| Ethernet | RTL8152 `0BDA:8152` on hub via built-in ECM |
-| CPU | 6P+4E, 16 threads, IntelHybridCores; CPUFriend/CTR disabled |
-| Config (published, sanitized) | SHA256 `343ee1c60ae170235a1e7085a144f4724219e7c6c3314396441f3a4361151199` |
-| WhateverXe (published build) | SHA256 `fb2f6bb995f951acb5df501892ae1281c54e5062dffcd0599ad4121496b07546` |
-| EFI zip | SHA256 `adb2ae75166fd1a2eea721a4518acd363f73b1833d137793f706eca1f1f4f1e2` |
+| Laptop | Motorola Moto Book 60, machine type `83J7` |
+| CPU | Intel Core 7 240H, Raptor Lake, 6 P-cores + 4 E-cores, 16 threads with HT |
+| GPU | Intel `8086:A7AB`, Samsung OLED 2880×1800 at 120 Hz |
+| Wi‑Fi | Realtek RTL8922AE, PCI `10EC:8922` |
+| Bluetooth | Realtek RTL8922A, USB `0BDA:D922` |
+| Ethernet | RTL8152 USB adapter via built-in ECM |
+| Audio | AppleALC layout 15; internal DMIC via custom driver |
+| SMBIOS | `MacPro7,1` in the published profile |
 
-Published profile uses SMBIOS `MacPro7,1`; the internal mic does not publish on that profile. Use a laptop SMBIOS if the mic matters. `full/` contains ad-hoc-signed kexts and is not required to boot. Not a universal EFI.
+## What works
 
-Best recorded Geekbench 7 result: **1517 single / 8026 multi** with the full bundle and maximum fan cooling. AirDrop remains unverified (no Apple peer available). Sleep/wake is not reliable on this stack.
+- Native 2880×1800 at 120 Hz, plus a 60 Hz menu option and AUX brightness.
+- Metal 2 acceleration, brightness keys, keyboard and trackpad (VoodooI2C polling).
+- Realtek Wi‑Fi and Bluetooth, stable after reboot.
+- Speakers, USB, battery/sensors.
+- Optional full bundle: custom EPP/HWP tuning, fan mode, DYTC performance profile, internal mic driver.
 
-Licenses: OpenCore BSD‑3, kexts under their own licenses, WhateverXe BSD‑3. No machine-specific identifiers are published.
+**Not working / not verified:** internal mic on the published `MacPro7,1` profile (use a laptop SMBIOS if mic matters); AirDrop with a real Apple device; system sleep/wake.
+
+## EFI configuration
+
+- OpenCore 1.0.8, macOS 15.8.3 (24H241).
+- SMBIOS `MacPro7,1`, board-id `Mac-A61BADE1FDAD7B05`.
+- SIP `csr-active-config = 03 08 00 00`, SecureBootModel disabled.
+- Published config is sanitized; generate your own serial, MLB, UUID and ROM.
+
+### Boot arguments
+
+```text
+keepsyms=1 -allow3d -disablegfxfirmware -igfxdvmt -wex-tgl-edp-keep -wex-panel-gop -wex-edp-auxbl -btlfxboardid -btlfxallowanyaddr -btlfxrealtek ctrsmt=off hcpower=4,2 -vi2c-force-polling hpmpl1=64 tccoffset=2 revpatch=memtab,pci
+```
+
+### Key hashes
+
+```text
+d0163dfbe5d2ea46aececd7d7349acfa5b75dfed2993e8489816f3dda71914c8  BOOTx64.efi
+9ef21f9d846a992c030fa5858736a6d9efa70a3b4ad88b8d747338bb457b14d4  OpenCore.efi
+343ee1c60ae170235a1e7085a144f4724219e7c6c3314396441f3a4361151199  config.plist
+fb2f6bb995f951acb5df501892ae1281c54e5062dffcd0599ad4121496b07546  WhateverXe
+```
+
+## Kexts
+
+The `OC/Kexts` folder contains the boot/driver kexts: Lilu, RestrictEvents, CpuTscSync, WhateverXe, BrightnessKeys, BlueToolFixup, BTNameFix, AirPort_RTW89, IO80211FamilyLegacy, IOSkywalkFamily, RTL8922AFirmware, AppleALC, USBToolBox + UTBDefault, XHCI-unsupported, VirtualSMC, SMCBatteryManager, ReYogaSMC, VoodooPS2Controller, VoodooI2C, VoodooI2CHID, AMFIPass. CPUFriend and CpuTopologyRebuild are present but disabled.
+
+The custom EPP, FanMode, RaplDiag, TccOffset and mic kexts are in `full/` and are installed into the auxiliary kernel collection, not the EFI.
+
+## Installation
+
+1. Back up the disk and ESP; keep a separate bootable recovery USB.
+2. Format a USB stick as GPT/FAT32 with an EFI partition.
+3. Prepare the USB with the included script:
+   ```bash
+   ./tools/prepare-usb.sh /Volumes/USB-EFI
+   ```
+   It copies `BOOT/` and `OC/`, generates a fresh identity into `identity.generated.json`, applies it to `config.plist`, and runs `ocvalidate` if available.
+4. Boot from USB with the firmware picker. Verify display, brightness, keyboard/trackpad, Wi‑Fi, Bluetooth and audio.
+5. Optional performance bundle, only after a clean boot:
+   ```bash
+   sudo ./tools/install-full.sh --yes
+   ```
+   It installs `full/`, rebuilds AuxKC, and prints when to reboot. It does not unload kexts.
+6. Copy verified `BOOT/` and `OC/` to the internal ESP, preserving other boot entries. Keep the recovery USB.
+
+## Display
+
+WhateverXe is a custom 0.8.2-derived build with native 120 Hz raster for this Samsung OLED panel. The EDID reports only 60 Hz; the 120 Hz mode comes from WhateverXe timing. AUX brightness failures measured 0. Lighter scaled modes work; 3840×2400 render caused glitches and is not recommended.
+
+## Bluetooth and Wi‑Fi
+
+Realtek Bluetooth needs BlueToolFixup with Realtek patches plus `-btlfxboardid -btlfxallowanyaddr -btlfxrealtek`. Wi‑Fi uses the legacy 80211 stack + AirPort_RTW89 + Skywalk family + AMFIPass. Ethernet via RTL8152 binds built-in `AppleUSBECMData` through a high probe score in the firmware kext.
+
+## CPU and limits
+
+`IntelHybridCores` (`ctrsmt=off hcpower=4,2`), `HybridPM` (`hpmpl1=64`), and the custom EPP kext (EPP 0, HWP Desired 0) are used. `CPUFriend` and `CpuTopologyRebuild` are disabled. The logged `ICCMAX/PL4/OTHER` limit remains active; do not raise VRM/current limits or override thermal protections to chase a score. Best score with the full bundle and maximum fan cooling: Geekbench 7 `1517 / 8026`.
+
+## Internal microphone
+
+On the published `MacPro7,1` profile the mic publisher fails with `0xe00002d5` (initial PM idle acknowledgement missing). Use a laptop SMBIOS if the mic matters. The driver is included in `full/` for reference.
+
+## Resources
+
+- [Dortania OpenCore Install Guide](https://dortania.github.io/OpenCore-Install-Guide/)
+- [OpenCorePkg](https://github.com/acidanthera/OpenCorePkg)
+- [WhateverXe](https://github.com/b00t0x/WhateverXe)
+- [IntelHybridCores](https://github.com/rodgod-rr/IntelHybridCores)
+- [HybridPM](https://github.com/Thatisjigen/HybridPM)
+- [IntelSpeedShiftEPP](https://github.com/xnpty/IntelSpeedShiftEPP)
+
+## Credits
+
+Upstream OpenCore, Lilu, VirtualSMC, WhateverXe, VoodooI2C, VoodooPS2, AppleALC, IntelHybridCores, HybridPM and IntelSpeedShiftEPP projects. This EFI is machine-specific; it is not a universal macOS configuration.
